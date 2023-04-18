@@ -1,15 +1,14 @@
-const buttonElement = document.getElementById("add-button");
 const deleteButtonElement = document.getElementById("delete-button");
 const listElement = document.getElementById("list");
-const nameInputElement = document.getElementById("name-input");
-const textInputElement = document.getElementById("text-input");
-const mainForm = document.querySelector(".add-form");
 
-const loaderStartElement = document.getElementById("loader-start");
-const loaderPostElement = document.getElementById("loader-post");
+// const loaderStartElement = document.getElementById("loader-start");
+// const loaderPostElement = document.getElementById("loader-post");
 
 let comments = [];
 
+let token = "Bearer asb4c4boc86gasb4c4boc86g37w3cc3bo3b83k4g37k3bk3cg3c03ck4k";
+
+const host = "https://webdev-hw-api.vercel.app/api/v2/ekaterina-budylina/comments";
 
 const options = {
   year: "2-digit",
@@ -22,17 +21,20 @@ const options = {
 
 // Получаем данные из хранилища
 
-
-loaderStartElement.textContent = 'Пожалуйста, подождите, загружаю комментарии...';
-
 const fetchAndRenderComments = () => {
   // fetch - запускает запрос в api
-  return fetch("https://webdev-hw-api.vercel.app/api/v1/ekaterina-budylina/comments", {
+  return fetch(host, {
     method: "GET",
+    headers: {
+      Authorization: token,
+    },
     forceError: true,
   })
     .then((response) => {
-      // Запускаем преобразовываем "сырые" данные от API в json формат
+      if (response.status === 401) {
+        // fetchAndRenderComments();
+        throw new Error("Нет авторизации");
+      }
       return response.json();
     })
     .then((responseData) => {
@@ -49,7 +51,7 @@ const fetchAndRenderComments = () => {
       renderComments();
     })
     .then(() => {
-      loaderStartElement.style.display = "none";
+      // loaderStartElement.style.display = "none";
     })
     .catch((error) => {
       alert("Кажется, что-то пошло не так, попробуйте позже");
@@ -58,7 +60,7 @@ const fetchAndRenderComments = () => {
     });
 };
 
-loaderPostElement.style.display = "none";
+// loaderPostElement.style.display = "none";
 
 
 // Оживляем кнопку лайков
@@ -84,99 +86,6 @@ const changeLikesListener = () => {
 };
 
 
-//Добавление комментария
-
-buttonElement.addEventListener("click", () => {
-  nameInputElement.classList.remove("error");
-  textInputElement.classList.remove("error");
-
-  if (nameInputElement.value === "" || textInputElement.value === "") {
-    nameInputElement.classList.add("error");
-    textInputElement.classList.add("error");
-    return;
-  }
-
-  const date = new Date().toLocaleString("ru-RU", options);
-
-  fetch("https://webdev-hw-api.vercel.app/api/v1/ekaterina-budylina/comments", {
-    method: "POST",
-    body: JSON.stringify({
-      name: nameInputElement.value
-        .replaceAll("<", "&lt;")
-        .replaceAll(">", "&gt;"),
-      date: date,
-      text: textInputElement.value
-        .replaceAll("<", "&lt;")
-        .replaceAll(">", "&gt;"),
-      counter: 0,
-      liked: false,
-      forceError: true,
-    }),
-  })
-    .then((response) => {
-      console.log(response);
-      if (response.status === 201) {
-        mainForm.style.display = "none";
-        loaderPostElement.style.display = "flex";
-        nameInputElement.value = "";
-        textInputElement.value = "";
-        return response.json();
-      } else if (response.status === 500) {
-        alert("Сервер сломался, попробуй позже");
-        // return Promise.reject("Сервер упал");
-      } else if (response.status === 400) {
-        alert("Имя и комментарий должны быть не короче 3 символов");
-        // return Promise.reject("Сервер упал");
-      }
-    })
-    .then(() => {
-      return fetchAndRenderComments();
-    })
-    .then(() => {
-      loaderPostElement.style.display = "none";
-      mainForm.style.display = "flex";
-
-    })
-    .catch((error) => {
-      buttonElement.disabled = false;
-      alert("Кажется, у вас сломался интернет, попробуйте позже");
-      // TODO: Отправлять в систему сбора ошибок
-      console.warn(error);
-    });
-
-  renderComments();
-});
-
-
-
-// блокировка кнопки
-const validateInput = () => {
-  if (nameInputElement.value === "" || textInputElement.value === "") {
-    buttonElement.disabled = true;
-  } else {
-    buttonElement.disabled = false;
-  }
-};
-const buttonBlock = () => {
-  validateInput();
-  document.querySelectorAll("#name-input,#text-input").forEach((el) => {
-    el.addEventListener("input", () => {
-      validateInput();
-    });
-  });
-};
-
-// ввод по кнопке enter
-
-mainForm.addEventListener('keydown', (e) => {
-  if (!e.shiftKey && e.key === 'Enter') {
-    buttonElement.click();
-    nameInputElement.value = '';
-    textInputElement.value = '';
-  }
-});
-
-
 // ответ на комментарии
 
 const editComment = () => {
@@ -191,42 +100,168 @@ const editComment = () => {
 };
 
 
-
-//DOM 2
-
 //рендер-функция
 
 const renderComments = () => {
+  const appEl = document.getElementById("app");
   const commentsHtml = comments
     .map((student, index) => {
       return `
-        <li data-text = '&gt ${student.text} \n ${student.name
+      <li data-text = '&gt ${student.text} \n ${student.name
         }' class="comment">
-          <div class="comment-header">
-            <div>${student.name}</div>
-            <div>${student.date}</div>
+        <div class="comment-header">
+          <div>${student.name}</div>
+          <div>${student.date}</div>
+        </div>
+        <div class="comment-body">
+          <div class="comment-text">
+            ${student.text}
           </div>
-          <div class="comment-body">
-            <div class="comment-text">
-              ${student.text}
-            </div>
-          </div>
-          <div class="comment-footer">
-            <div class="likes">
-              <span class="likes-counter">${student.counter}</span>
-              <button data-index = '${index}' class="${student.liked ? "like-button -active-like" : "like-button"
+        </div>
+        <div class="comment-footer">
+          <div class="likes">
+            <span class="likes-counter">${student.counter}</span>
+            <button data-index = '${index}' class="${student.liked ? "like-button -active-like" : "like-button"
         }"></button>
-            </div>
           </div>
-        </li>`;
+        </div>
+      </li>`;
     })
     .join("");
-  listElement.innerHTML = commentsHtml;
 
+  const appHtml = `
+    <div class="container">
+    <div class="login-form">
+      <h3 class="login-form-title">Форма входа</h3>
+      <input type="text" id="login-input" class="login-form-login" placeholder="Введите логин" />
+      <input type="password" id="password-input" class="login-form-password" placeholder="Введите пароль" />
+      <!-- <input type="text" id="name-input" class="login-form-name" placeholder="Введите ваше имя" /> -->
+      <button id="login-button" class="login-form-button">Войти </button>
+      <a class="login-register" href="#">Зарегистрироваться</a>
+    </div>
+    <!-- <p id="loader-start">Пожалуйста, подождите, загружаю комментарии...</p>-->
+    <ul id="list" class="comments">
+      <!-- Список рендерится из JS -->
+      ${commentsHtml}
+    </ul>
+    <div>
+    <!-- <p id="loader-post">Комментарий добавляется...</p>-->
+    </div>
+    <div class="add-form">
+      <input type="text" id="name-input" class="add-form-name" placeholder="Введите ваше имя" />
+      <textarea type="textarea" id="text-input" class="add-form-text" placeholder="Введите ваш комментарий"
+        rows="4"></textarea>
+      <div class="add-form-row">
+        <button id="add-button" class="add-form-button">Написать</button>
+      </div>
+    </div>
+  </div>`;
+
+  appEl.innerHTML = appHtml;
+
+  const buttonElement = document.getElementById("add-button");
+  const nameInputElement = document.getElementById("name-input");
+  const textInputElement = document.getElementById("text-input");
+  const mainForm = document.querySelector(".add-form");
+
+  //Добавление комментария
+
+  buttonElement.addEventListener("click", () => {
+    nameInputElement.classList.remove("error");
+    textInputElement.classList.remove("error");
+
+    if (nameInputElement.value === "" || textInputElement.value === "") {
+      nameInputElement.classList.add("error");
+      textInputElement.classList.add("error");
+      return;
+    }
+
+    const date = new Date().toLocaleString("ru-RU", options);
+
+    fetch(host, {
+      method: "POST",
+      headers: {
+        Authorization: token,
+      },
+      body: JSON.stringify({
+        name: nameInputElement.value
+          .replaceAll("<", "&lt;")
+          .replaceAll(">", "&gt;"),
+        date: date,
+        text: textInputElement.value
+          .replaceAll("<", "&lt;")
+          .replaceAll(">", "&gt;"),
+        counter: 0,
+        liked: false,
+        forceError: true,
+      }),
+    })
+      .then((response) => {
+        console.log(response);
+        if (response.status === 201) {
+          mainForm.style.display = "none";
+          // loaderPostElement.style.display = "flex";
+          nameInputElement.value = "";
+          textInputElement.value = "";
+          return response.json();
+        } else if (response.status === 500) {
+          alert("Сервер сломался, попробуй позже");
+          // return Promise.reject("Сервер упал");
+        } else if (response.status === 400) {
+          alert("Имя и комментарий должны быть не короче 3 символов");
+          // return Promise.reject("Сервер упал");
+        }
+      })
+      .then(() => {
+        return fetchAndRenderComments();
+      })
+      .then(() => {
+        // loaderPostElement.style.display = "none";
+        mainForm.style.display = "flex";
+
+      })
+      .catch((error) => {
+        buttonElement.disabled = false;
+        alert("Кажется, у вас сломался интернет, попробуйте позже");
+        // TODO: Отправлять в систему сбора ошибок
+        console.warn(error);
+      });
+
+    renderComments();
+  });
+
+  // ввод по кнопке enter
+
+  mainForm.addEventListener('keydown', (e) => {
+    if (!e.shiftKey && e.key === 'Enter') {
+      buttonElement.click();
+      nameInputElement.value = '';
+      textInputElement.value = '';
+    }
+  });
+
+  // блокировка кнопки
+  const validateInput = () => {
+    if (nameInputElement.value === "" || textInputElement.value === "") {
+      buttonElement.disabled = true;
+    } else {
+      buttonElement.disabled = false;
+    }
+  };
+  const buttonBlock = () => {
+    validateInput();
+    document.querySelectorAll("#name-input,#text-input").forEach((el) => {
+      el.addEventListener("input", () => {
+        validateInput();
+      });
+    });
+  };
+
+  buttonBlock();
   changeLikesListener();
   editComment();
 };
 fetchAndRenderComments();
 renderComments();
-buttonBlock();
+
 
