@@ -46,3 +46,18 @@ export function addComment({ name, date, text, forceError, token }) {
             }
         })
 }
+
+// Ссылка на документацию по авторизации:
+// https://github.com/GlebkaF/webdev-hw-api/blob/main/pages/api/user/README.md
+
+export function loginUser({ login, password }) {
+    return fetch("https://webdev-hw-api.vercel.app/api/user/login", {
+        method: "POST",
+        body: JSON.stringify({
+            login,
+            password,
+        }),
+    }).then((response) => {
+        return response.json();
+    });
+}
