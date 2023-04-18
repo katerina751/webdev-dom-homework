@@ -16,16 +16,28 @@ export function renderLoginComponent({ appEl, setToken, fetchAndRenderComments, 
 
     document.getElementById('login-button').addEventListener('click', () => {
 
-        setToken("Bearer asb4c4boc86gasb4c4boc86g37w3cc3bo3b83k4g37k3bk3cg3c03ck4k");
+        const login = document.getElementById('login-input').value;
+        const password = document.getElementById('password-input').value;
+
+        if (!login) {
+            alert('Введите логин');
+            return;
+        }
+
+        if (!password) {
+            alert('Введите пароль');
+            return;
+        }
 
         loginUser({
-            login: "admin",
-            password: "admin",
-        }).then((user)=>{
-            console.log(user);
-
+            login: login,
+            password: password,
+        }).then((user) => {
             setToken(`Bearer ${user.user.token}`);
             fetchAndRenderComments();
+        }).catch(error => {
+            // вывести алерт красиво в окошке
+            alert(error.message);
         });
     });
 
