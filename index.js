@@ -1,3 +1,5 @@
+import { addComment, getComments } from "./api.js";
+
 const deleteButtonElement = document.getElementById("delete-button");
 const listElement = document.getElementById("list");
 
@@ -11,7 +13,6 @@ let token = "Bearer asb4c4boc86gasb4c4boc86g37w3cc3bo3b83k4g37k3bk3cg3c03ck4k";
 
 token = null;
 
-const host = "https://webdev-hw-api.vercel.app/api/v2/ekaterina-budylina/comments";
 
 const options = {
   year: "2-digit",
@@ -26,20 +27,7 @@ const options = {
 
 const fetchAndRenderComments = () => {
   // fetch - запускает запрос в api
-  return fetch(host, {
-    method: "GET",
-    headers: {
-      Authorization: token,
-    },
-    forceError: true,
-  })
-    .then((response) => {
-      if (response.status === 401) {
-        // fetchAndRenderComments();
-        throw new Error("Нет авторизации");
-      }
-      return response.json();
-    })
+  return getComments({ token })
     .then((responseData) => {
       comments = responseData.comments.map((comment) => {
         return {
@@ -197,40 +185,17 @@ const renderApp = () => {
 
     const date = new Date().toLocaleString("ru-RU", options);
 
-    fetch(host, {
-      method: "POST",
-      headers: {
-        Authorization: token,
-      },
-      body: JSON.stringify({
-        name: nameInputElement.value
-          .replaceAll("<", "&lt;")
-          .replaceAll(">", "&gt;"),
-        date: date,
-        text: textInputElement.value
-          .replaceAll("<", "&lt;")
-          .replaceAll(">", "&gt;"),
-        counter: 0,
-        liked: false,
-        forceError: true,
-      }),
-    })
-      .then((response) => {
-        console.log(response);
-        if (response.status === 201) {
-          mainForm.style.display = "none";
-          // loaderPostElement.style.display = "flex";
-          nameInputElement.value = "";
-          textInputElement.value = "";
-          return response.json();
-        } else if (response.status === 500) {
-          alert("Сервер сломался, попробуй позже");
-          // return Promise.reject("Сервер упал");
-        } else if (response.status === 400) {
-          alert("Имя и комментарий должны быть не короче 3 символов");
-          // return Promise.reject("Сервер упал");
-        }
-      })
+    // name и text: textInputElement.value
+    // .replaceAll("<", "&lt;")
+    // .replaceAll(">", "&gt;"),
+
+    addComment({ 
+      name: nameInputElement.value,
+      date: new Date(),
+      text: textInputElement.value,
+      forceError: true,
+      token,
+     })
       .then(() => {
         return fetchAndRenderComments();
       })
