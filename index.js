@@ -9,6 +9,8 @@ let comments = [];
 
 let token = "Bearer asb4c4boc86gasb4c4boc86g37w3cc3bo3b83k4g37k3bk3cg3c03ck4k";
 
+token = null;
+
 const host = "https://webdev-hw-api.vercel.app/api/v2/ekaterina-budylina/comments";
 
 const options = {
@@ -105,24 +107,48 @@ const editComment = () => {
 
 const renderApp = () => {
   const appEl = document.getElementById("app");
+
+  if (!token) {
+    const appHtml = `
+    <div class="container">
+    <div class="login-form">
+      <h3 class="login-form-title">Форма входа</h3>
+      <input type="text" id="login-input" class="login-form-login" placeholder="Введите логин" />
+      <input type="password" id="password-input" class="login-form-password" placeholder="Введите пароль" />
+      <!-- <input type="text" id="name-input" class="login-form-name" placeholder="Введите ваше имя" /> -->
+      <button id="login-button" class="login-form-button">Войти </button>
+      <a class="login-register" href="#">Зарегистрироваться</a>
+    </div>`;
+
+    appEl.innerHTML = appHtml;
+
+    document.getElementById('login-button').addEventListener('click', () => {
+      token = "Bearer asb4c4boc86gasb4c4boc86g37w3cc3bo3b83k4g37k3bk3cg3c03ck4k";
+      fetchAndRenderComments();
+    })
+
+    return;
+  }
+
+
   const commentsHtml = comments
-    .map((student, index) => {
+    .map((comment, index) => {
       return `
-      <li data-text = '&gt ${student.text} \n ${student.name
+      <li data-text = '&gt ${comment.text} \n ${comment.name
         }' class="comment">
         <div class="comment-header">
-          <div>${student.name}</div>
-          <div>${student.date}</div>
+          <div>${comment.name}</div>
+          <div>${comment.date}</div>
         </div>
         <div class="comment-body">
           <div class="comment-text">
-            ${student.text}
+            ${comment.text}
           </div>
         </div>
         <div class="comment-footer">
           <div class="likes">
-            <span class="likes-counter">${student.counter}</span>
-            <button data-index = '${index}' class="${student.liked ? "like-button -active-like" : "like-button"
+            <span class="likes-counter">${comment.counter}</span>
+            <button data-index = '${index}' class="${comment.liked ? "like-button -active-like" : "like-button"
         }"></button>
           </div>
         </div>
@@ -132,15 +158,7 @@ const renderApp = () => {
 
   const appHtml = `
     <div class="container">
-    <div class="login-form">
-      <h3 class="login-form-title">Форма входа</h3>
-      <input type="text" id="login-input" class="login-form-login" placeholder="Введите логин" />
-      <input type="password" id="password-input" class="login-form-password" placeholder="Введите пароль" />
-      <!-- <input type="text" id="name-input" class="login-form-name" placeholder="Введите ваше имя" /> -->
-      <button id="login-button" class="login-form-button">Войти </button>
-      <a class="login-register" href="#">Зарегистрироваться</a>
-    </div>
-    <!-- <p id="loader-start">Пожалуйста, подождите, загружаю комментарии...</p>-->
+    <p id="loader-start">Пожалуйста, подождите, загружаю комментарии...</p>
     <ul id="list" class="comments">
       <!-- Список рендерится из JS -->
       ${commentsHtml}
@@ -262,7 +280,7 @@ const renderApp = () => {
   changeLikesListener();
   editComment();
 };
-fetchAndRenderComments();
+// fetchAndRenderComments();
 renderApp();
 
 
