@@ -1,44 +1,55 @@
 import { loginUser } from "./api.js";
 
 export function renderLoginComponent({ appEl, setToken, fetchAndRenderComments, }) {
-    const appHtml = `
-    <div class="container">
-    <div class="login-form">
-      <h3 class="login-form-title">Форма входа</h3>
-      <input type="text" id="login-input" class="login-form-login" placeholder="Введите логин" />
-      <input type="password" id="password-input" class="login-form-password" placeholder="Введите пароль" />
-      <!-- <input type="text" id="name-input" class="login-form-name" placeholder="Введите ваше имя" /> -->
-      <button id="login-button" class="login-form-button">Войти </button>
-      <a class="login-register" href="#">Зарегистрироваться</a>
-    </div>`;
+    let isLoginMode = false;
 
-    appEl.innerHTML = appHtml;
+    const renderForm = () => {
+        const appHtml = `
+        <div class="container">
+        <div class="login-form">
+          <h3 class="login-form-title">Форма ${isLoginMode ? 'входа' : 'регистрации'}</h3>
+          ${isLoginMode ? '' :
+                `<input type="text" id="name-input" class="login-form-login" placeholder="Введите имя" />`}
+          <input type="text" id="login-input" class="login-form-login" placeholder="Введите логин" />
+          <input type="password" id="password-input" class="login-form-password" placeholder="Введите пароль" />
+          <button id="login-button" class="login-form-button">${isLoginMode ? 'Войти' : 'Зарегистрироваться'}</button>
+          <button id="toggle-button" class="login-register">${isLoginMode ? 'Зарегистрироваться' : 'Авторизоваться'}</button>
+        </div>`;
 
-    document.getElementById('login-button').addEventListener('click', () => {
+        appEl.innerHTML = appHtml;
 
-        const login = document.getElementById('login-input').value;
-        const password = document.getElementById('password-input').value;
+        document.getElementById('login-button').addEventListener('click', () => {
 
-        if (!login) {
-            alert('Введите логин');
-            return;
-        }
+            const login = document.getElementById('login-input').value;
+            const password = document.getElementById('password-input').value;
 
-        if (!password) {
-            alert('Введите пароль');
-            return;
-        }
+            if (!login) {
+                alert('Введите логин');
+                return;
+            }
 
-        loginUser({
-            login: login,
-            password: password,
-        }).then((user) => {
-            setToken(`Bearer ${user.user.token}`);
-            fetchAndRenderComments();
-        }).catch(error => {
-            // вывести алерт красиво в окошке
-            alert(error.message);
+            if (!password) {
+                alert('Введите пароль');
+                return;
+            }
+
+            loginUser({
+                login: login,
+                password: password,
+            }).then((user) => {
+                setToken(`Bearer ${user.user.token}`);
+                fetchAndRenderComments();
+            }).catch(error => {
+                // вывести алерт красиво в окошке
+                alert(error.message);
+            });
         });
-    });
 
+        document.getElementById('toggle-button').addEventListener('click', () => {
+            isLoginMode = !isLoginMode;
+            renderForm();
+        });
+    };
+
+    renderForm();
 }
