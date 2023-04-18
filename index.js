@@ -49,7 +49,7 @@ const fetchAndRenderComments = () => {
         };
       });
       // получили данные и рендерим их в приложении
-      renderComments();
+      renderApp();
     })
     .then(() => {
       // loaderStartElement.style.display = "none";
@@ -81,7 +81,7 @@ const changeLikesListener = () => {
         comments[index].liked = false;
         comments[index].counter -= 1;
       }
-      renderComments();
+      renderApp();
     });
   }
 };
@@ -103,7 +103,7 @@ const editComment = () => {
 
 //рендер-функция
 
-const renderComments = () => {
+const renderApp = () => {
   const appEl = document.getElementById("app");
   const commentsHtml = comments
     .map((student, index) => {
@@ -228,7 +228,7 @@ const renderComments = () => {
         console.warn(error);
       });
 
-    renderComments();
+    renderApp();
   });
 
   // ввод по кнопке enter
@@ -263,6 +263,6 @@ const renderComments = () => {
   editComment();
 };
 fetchAndRenderComments();
-renderComments();
+renderApp();
 
 
