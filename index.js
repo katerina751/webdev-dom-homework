@@ -10,6 +10,7 @@ const loaderPostElement = document.getElementById("loader-post");
 
 let comments = [];
 
+
 const options = {
   year: "2-digit",
   month: "numeric",
