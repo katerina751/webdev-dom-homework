@@ -17,6 +17,19 @@ export function getComments({ token }) {
         });
 }
 
+export function deleteComment({ token, id, }) {
+    console.log(id);
+    return fetch("https:webdev-hw-api.vercel.app/api/v2/ekaterina-budylina/comments/" + id, {
+        method: "DELETE",
+        headers: {
+            Authorization: token,
+        },
+    })
+        .then((response) => {
+            return response.json();
+        })
+}
+
 export function addComment({ name, date, text, forceError, token }) {
     return fetch(host, {
         method: "POST",
@@ -59,7 +72,7 @@ export function registerUser({ login, password, name }) {
             name,
         }),
     }).then((response) => {
-        if(response.status===400){
+        if (response.status === 400) {
             throw new Error("Такой пользователь уже существует");
         }
         return response.json();
@@ -74,7 +87,7 @@ export function loginUser({ login, password }) {
             password,
         }),
     }).then((response) => {
-        if(response.status===400){
+        if (response.status === 400) {
             throw new Error("Неверный логин или пароль");
         }
         return response.json();

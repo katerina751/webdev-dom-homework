@@ -134,6 +134,11 @@ body {
     cursor: pointer;
   }
 
+  .delete-row {
+    display: flex;
+    justify-content: flex-end;
+  }
+
   .delete-button {
     margin-top: 24px;
     font-size: 24px;

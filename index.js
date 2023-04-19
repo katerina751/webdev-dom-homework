@@ -1,13 +1,13 @@
-import { addComment, getComments } from "./api.js";
+import { addComment, deleteComment, getComments } from "./api.js";
 import { renderLoginComponent } from "./login-component.js";
 
-const deleteButtonElement = document.getElementById("delete-button");
+
 const listElement = document.getElementById("list");
 
 // const loaderStartElement = document.getElementById("loader-start");
 // const loaderPostElement = document.getElementById("loader-post");
 
-export let comments = [];
+let comments = [];
 
 
 let token = "Bearer asb4c4boc86gasb4c4boc86g37w3cc3bo3b83k4g37k3bk3cg3c03ck4k";
@@ -132,6 +132,9 @@ const renderApp = () => {
         }"></button>
           </div>
         </div>
+        <div class="delete-row">
+          <button data-id="${comment.id}" class="delete-button">Удалить</button>
+        </div>
       </li>`;
     })
     .join("");
@@ -162,6 +165,26 @@ const renderApp = () => {
   const nameInputElement = document.getElementById("name-input");
   const textInputElement = document.getElementById("text-input");
   const mainForm = document.querySelector(".add-form");
+  const deleteButtons = document.querySelectorAll(".delete-button");
+
+  // Удаление комментария
+
+  for (const deleteButton of deleteButtons) {
+    deleteButton.addEventListener("click", (event) => {
+      event.stopPropagation();
+
+      const id = deleteButton.dataset.id;
+
+      // Подписываемся на успешное завершение запроса с помощью then
+      deleteComment({ token, })
+        .then((responseData) => {
+          // Получили данные и рендерим их в приложении
+          comments = responseData.comments;
+          renderApp();
+        });
+
+    });
+  }
 
   //Добавление комментария
 
