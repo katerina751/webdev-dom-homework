@@ -1,17 +1,44 @@
 import { loginUser, registerUser } from "./api.js";
 
-export function renderLoginComponent({ appEl, setToken, fetchAndRenderComments, comments }) {
+export function renderLoginComponent({
+    appEl,
+    setToken,
+    fetchAndRenderComments, comments, }) {
 
     let isCurrentWindow = true;
 
     let isLoginMode = true;
 
     const renderForm = () => {
+        const listOfComments = comments && comments
+            .map((comment, index) => {
+                return `
+          <li class="comment">
+            <div class="comment-header">
+              <div>${comment.name}</div>
+              <div>${comment.date}</div>
+            </div>
+            <div class="comment-body">
+              <div class="comment-text">
+                ${comment.text}
+              </div>
+            </div>
+            <div class="comment-footer">
+              <div class="likes">
+                <span class="likes-counter">${comment.counter}</span>
+                <button data-index = '${index}' class="${comment.liked ? "like-button -active-like" : "like-button"
+                    }"></button>
+              </div>
+            </div>
+          </li>`;
+            })
+            .join("");
 
         const appHtml = `
         <div class="container">
         ${isCurrentWindow
                 ? `
+                ${listOfComments}
             <button id="toggle-link" class="login-register">
             Чтобы добавить комментарий, ${isCurrentWindow ? 'авторизуйтесь' : 'зарегистрируйтесь'}
             </button>`
