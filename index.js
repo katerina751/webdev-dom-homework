@@ -105,6 +105,7 @@ const renderApp = () => {
         token = newToken;
       },
       fetchAndRenderComments,
+      comments,
     });
 
     return;
