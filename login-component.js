@@ -14,8 +14,9 @@ export function renderLoginComponent({
 
         const listOfComments = comments &&
             comments
-                .map((comment, index) => {
-                    return `<li class="comment">
+                .map((comment, id) => {
+                    return `
+                    <li class="comment">
             <div class="comment-header">
               <div>${comment.name}</div>
               <div>${comment.date}</div>
@@ -28,11 +29,12 @@ export function renderLoginComponent({
             <div class="comment-footer">
               <div class="likes">
                 <span class="likes-counter">${comment.likes}</span>
-                <button data-index = '${index}' class="${comment.isLiked ? "like-button -active-like" : "like-button"
+                <button data-index = '${id}' class="${comment.isLiked ? "like-button -active-like" : "like-button"
                         }"></button>
               </div>
             </div>
-          </li>`;
+          </li>
+    `;
                 })
                 .join("");
 

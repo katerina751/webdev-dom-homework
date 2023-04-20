@@ -1,11 +1,12 @@
 const host = "https://webdev-hw-api.vercel.app/api/v2/ekaterina-budylina/comments";
 
-export function getComments({ token }) {
+export function getComments({ token, id }) {
     return fetch(host, {
         method: "GET",
         headers: {
             Authorization: token,
         },
+        id,
         // forceError: true,
     })
         .then((response) => {

@@ -35,9 +35,11 @@ const fetchAndRenderComments = () => {
           name: comment.author.name,
           date: new Date(comment.date).toLocaleString("ru-RU", options),
           text: comment.text,
-          counter: comment.likes,
-          liked: false,
+          likes: comment.likes,
+          isLiked: false,
+          id: comment.id,
         };
+        
       });
       // получили данные и рендерим их в приложении
       renderApp();
@@ -65,12 +67,12 @@ const changeLikesListener = () => {
       event.stopPropagation();
       const index = buttonLikeElement.dataset.index;
 
-      if (comments[index].liked === false) {
-        comments[index].liked = true;
-        comments[index].counter += 1;
-      } else if (comments[index].liked === true) {
-        comments[index].liked = false;
-        comments[index].counter -= 1;
+      if (comments[index].isLiked === false) {
+        comments[index].isLiked = true;
+        comments[index].likes += 1;
+      } else if (comments[index].isLiked === true) {
+        comments[index].isLiked = false;
+        comments[index].likes -= 1;
       }
       renderApp();
     });
@@ -112,7 +114,7 @@ const renderApp = () => {
   }
 
   const commentsHtml = comments
-    .map((comment, index) => {
+    .map((comment, id) => {
       return `
       <li data-text = '&gt ${comment.text} \n ${comment.name
         }' class="comment">
@@ -127,8 +129,8 @@ const renderApp = () => {
         </div>
         <div class="comment-footer">
           <div class="likes">
-            <span class="likes-counter">${comment.counter}</span>
-            <button data-index = '${index}' class="${comment.liked ? "like-button -active-like" : "like-button"
+            <span class="likes-counter">${comment.likes}</span>
+            <button data-index = '${id}' class="${comment.isLiked ? "like-button -active-like" : "like-button"
         }"></button>
           </div>
         </div>
@@ -176,13 +178,13 @@ const renderApp = () => {
       const id = deleteButton.dataset.id;
 
       // Подписываемся на успешное завершение запроса с помощью then
-      deleteComment({ token, })
+      deleteComment({ token, id })
         .then((responseData) => {
           // Получили данные и рендерим их в приложении
           comments = responseData.comments;
-          renderApp();
+          fetchAndRenderComments();
         });
-
+        renderApp();
     });
   }
 
@@ -260,5 +262,5 @@ const renderApp = () => {
   changeLikesListener();
   editComment();
 };
-// fetchAndRenderComments();
+fetchAndRenderComments();
 renderApp();
