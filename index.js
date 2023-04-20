@@ -2,45 +2,51 @@ import { addComment, deleteComment, getComments } from "./api.js";
 import { renderLoginComponent } from "./login-component.js";
 
 
-const listElement = document.getElementById("list");
-
-// const loaderStartElement = document.getElementById("loader-start");
-// const loaderPostElement = document.getElementById("loader-post");
 
 let comments = [];
+let token = null;
 
-
-let token = "Bearer asb4c4boc86gasb4c4boc86g37w3cc3bo3b83k4g37k3bk3cg3c03ck4k";
-
-token = null;
-
-
-const options = {
-  year: "2-digit",
-  month: "numeric",
-  day: "numeric",
-  timezone: "UTC",
-  hour: "numeric",
-  minute: "2-digit",
-};
 
 // Получаем данные из хранилища
 
-const fetchAndRenderComments = () => {
+const fetchComments = () => {
+
+  const loaderStartElement = document.getElementById("loader-start");
+  console.log(loaderStartElement);
+  // loaderStartElement.style.display = "inline";
+
   // fetch - запускает запрос в api
   return getComments({ token })
     .then((responseData) => {
-      comments = responseData.comments.map((comment) => {
+      const options = {
+        year: "2-digit",
+        month: "numeric",
+        day: "numeric",
+        timezone: "UTC",
+        hour: "numeric",
+        minute: "2-digit",
+      };
+
+      const appComments = responseData.comments.map((comment) => {
         return {
-          name: comment.author.name,
+          name: comment.author.name
+            .replaceAll("<", "&lt;")
+            .replaceAll(">", "&gt;"),
           date: new Date(comment.date).toLocaleString("ru-RU", options),
-          text: comment.text,
+          text: comment.text
+            .replaceAll("<", "&lt;")
+            .replaceAll(">", "&gt;"),
           likes: comment.likes,
           isLiked: false,
           id: comment.id,
         };
-        
+
       });
+
+      console.log(loaderStartElement);
+
+      comments = appComments;
+
       // получили данные и рендерим их в приложении
       renderApp();
     })
@@ -48,49 +54,11 @@ const fetchAndRenderComments = () => {
       // loaderStartElement.style.display = "none";
     })
     .catch((error) => {
+      // loaderStartElement.style.display = "none";
       alert("Кажется, что-то пошло не так, попробуйте позже");
       // TODO: Отправлять в систему сбора ошибок
       console.warn(error);
     });
-};
-
-// loaderPostElement.style.display = "none";
-
-
-// Оживляем кнопку лайков
-
-const changeLikesListener = () => {
-  const buttonLikeElements = document.querySelectorAll(".like-button");
-
-  for (const buttonLikeElement of buttonLikeElements) {
-    buttonLikeElement.addEventListener("click", (event) => {
-      event.stopPropagation();
-      const index = buttonLikeElement.dataset.index;
-
-      if (comments[index].isLiked === false) {
-        comments[index].isLiked = true;
-        comments[index].likes += 1;
-      } else if (comments[index].isLiked === true) {
-        comments[index].isLiked = false;
-        comments[index].likes -= 1;
-      }
-      renderApp();
-    });
-  }
-};
-
-
-// ответ на комментарии
-
-const editComment = () => {
-  const comments = document.querySelectorAll(".comment");
-  const textInputElement = document.getElementById("text-input");
-  for (const comment of comments) {
-    comment.addEventListener("click", () => {
-      const textComment = comment.dataset.text;
-      textInputElement.value = textComment;
-    });
-  }
 };
 
 
@@ -102,11 +70,14 @@ const renderApp = () => {
   if (!token) {
 
     renderLoginComponent({
+      setName: (newName) => {
+        name = newName;
+      },
       appEl,
       setToken: (newToken) => {
         token = newToken;
       },
-      fetchAndRenderComments,
+      renderApp,
       comments,
     });
 
@@ -143,16 +114,16 @@ const renderApp = () => {
 
   const appHtml = `
     <div class="container">
-    <p id="loader-start">Пожалуйста, подождите, загружаю комментарии...</p>
+    <p id="loader-start" style="display: none">Пожалуйста, подождите, загружаю комментарии...</p>
     <ul id="list" class="comments">
       <!-- Список рендерится из JS -->
       ${commentsHtml}
     </ul>
     <div>
-    <!-- <p id="loader-post">Комментарий добавляется...</p>-->
+    <!-- <p id="loader-post" style="display: none">Комментарий добавляется...</p>-->
     </div>
     <div class="add-form">
-      <input type="text" id="name-input" class="add-form-name" placeholder="Введите ваше имя" />
+      <input type="textarea" id="name-input" class="add-form-name" value = "${name}" disabled />
       <textarea type="textarea" id="text-input" class="add-form-text" placeholder="Введите ваш комментарий"
         rows="4"></textarea>
       <div class="add-form-row">
@@ -182,9 +153,9 @@ const renderApp = () => {
         .then((responseData) => {
           // Получили данные и рендерим их в приложении
           comments = responseData.comments;
-          fetchAndRenderComments();
+          fetchComments();
         });
-        renderApp();
+      renderApp();
     });
   }
 
@@ -199,12 +170,8 @@ const renderApp = () => {
       textInputElement.classList.add("error");
       return;
     }
-
-    const date = new Date().toLocaleString("ru-RU", options);
-
-    // name и text: textInputElement.value
-    // .replaceAll("<", "&lt;")
-    // .replaceAll(">", "&gt;"),
+    const loaderPostElement = document.getElementById("loader-post");
+    console.log(loaderPostElement);
 
     addComment({
       name: nameInputElement.value,
@@ -214,7 +181,7 @@ const renderApp = () => {
       token,
     })
       .then(() => {
-        return fetchAndRenderComments();
+        return fetchComments();
       })
       .then(() => {
         // loaderPostElement.style.display = "none";
@@ -230,6 +197,43 @@ const renderApp = () => {
 
     renderApp();
   });
+
+
+  // Оживляем кнопку лайков
+
+  const changeLikesListener = () => {
+    const buttonLikeElements = document.querySelectorAll(".like-button");
+
+    for (const buttonLikeElement of buttonLikeElements) {
+      buttonLikeElement.addEventListener("click", (event) => {
+        event.stopPropagation();
+        const index = buttonLikeElement.dataset.index;
+
+        if (comments[index].isLiked === false) {
+          comments[index].isLiked = true;
+          comments[index].likes += 1;
+        } else if (comments[index].isLiked === true) {
+          comments[index].isLiked = false;
+          comments[index].likes -= 1;
+        }
+        renderApp();
+      });
+    }
+  };
+
+
+  // ответ на комментарии
+
+  const editComment = () => {
+    const comments = document.querySelectorAll(".comment");
+    const textInputElement = document.getElementById("text-input");
+    for (const comment of comments) {
+      comment.addEventListener("click", () => {
+        const textComment = comment.dataset.text;
+        textInputElement.value = textComment;
+      });
+    }
+  };
 
   // ввод по кнопке enter
 
@@ -262,5 +266,5 @@ const renderApp = () => {
   changeLikesListener();
   editComment();
 };
-fetchAndRenderComments();
+fetchComments();
 renderApp();

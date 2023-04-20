@@ -1,9 +1,10 @@
 import { loginUser, registerUser } from "./api.js";
 
 export function renderLoginComponent({
+    setName,
     appEl,
     setToken,
-    fetchAndRenderComments, 
+    renderApp, 
     comments, }) {
 
     let isCurrentWindow = true;
@@ -37,8 +38,6 @@ export function renderLoginComponent({
     `;
                 })
                 .join("");
-
-        console.log(listOfComments);
 
         const appHtml = `
         <div class="container">
@@ -96,7 +95,8 @@ export function renderLoginComponent({
                         password: password,
                     }).then((user) => {
                         setToken(`Bearer ${user.user.token}`);
-                        fetchAndRenderComments();
+                        setName(user.user.name);
+                        renderApp();
                     }).catch(error => {
                         // вывести алерт красиво в окошке
                         alert(error.message);
@@ -127,11 +127,12 @@ export function renderLoginComponent({
                         name: name,
                     }).then((user) => {
                         setToken(`Bearer ${user.user.token} `);
-                        fetchAndRenderComments();
+                        renderApp();
                     }).catch(error => {
                         // вывести алерт красиво в окошке
                         alert(error.message);
                     });
+                    setName(name);
                 }
             });
 

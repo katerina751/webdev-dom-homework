@@ -7,11 +7,11 @@ export function getComments({ token, id }) {
             Authorization: token,
         },
         id,
-        // forceError: true,
+        forceError: true,
     })
         .then((response) => {
             if (response.status === 401) {
-                // fetchAndRenderComments();
+                fetchComments();
                 throw new Error("Нет авторизации");
             }
             return response.json();
@@ -19,8 +19,7 @@ export function getComments({ token, id }) {
 }
 
 export function deleteComment({ token, id, }) {
-    console.log(id);
-    return fetch("https:webdev-hw-api.vercel.app/api/v2/ekaterina-budylina/comments/" + id, {
+    return fetch(host + "/" + id, {
         method: "DELETE",
         headers: {
             Authorization: token,
