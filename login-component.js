@@ -4,7 +4,7 @@ export function renderLoginComponent({
     setName,
     appEl,
     setToken,
-    renderApp, 
+    renderApp,
     comments, }) {
 
     let isCurrentWindow = true;
@@ -12,7 +12,7 @@ export function renderLoginComponent({
     let isLoginMode = true;
 
     const renderForm = () => {
-
+        // YYYY-MM-DD hh.mm.ss
         const listOfComments = comments &&
             comments
                 .map((comment, id) => {
