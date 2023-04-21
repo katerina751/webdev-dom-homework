@@ -16,7 +16,7 @@ body {
 
   .comments,
   .comment {
-    margin: 0;
+    margin: 24px;
     padding: 0;
     list-style: none;
   }
@@ -37,7 +37,6 @@ body {
   .comments {
     display: flex;
     flex-direction: column;
-    gap: 24px;
   }
 
   .comment {
@@ -94,7 +93,7 @@ body {
 
   .add-form {
     padding: 20px;
-    margin-top: 48px;
+    margin-bottom: 48px;
     display: flex;
     flex-direction: column;
   }
@@ -133,6 +132,11 @@ body {
     cursor: pointer;
   }
 
+  .delete-row {
+    display: flex;
+    justify-content: flex-end;
+  }
+
   .delete-button {
     margin-top: 24px;
     font-size: 24px;
@@ -146,3 +150,76 @@ body {
   .add-form-button:hover {
     opacity: 0.9;
   }
+
+  .login-form{
+    padding: 20px;
+    margin-top: 48px;
+    margin-bottom: 48px;
+    display: flex;
+    flex-direction: column;
+    width: 596px;
+    box-sizing: border-box;
+    background: radial-gradient(
+      75.42% 75.42% at 50% 42.37%,
+      rgba(53, 53, 53, 0) 22.92%,
+      #7334ea 100%
+    );
+    filter: drop-shadow(0px 20px 67px rgba(0, 0, 0, 0.08));
+    border-radius: 20px;
+  }
+  
+
+  .login-form-title {
+    margin: 28px;
+    font-size: 24px;
+    display: flex;
+    justify-content: center;
+  }
+
+  .login-form-login {
+    margin: 6px;
+    font-size: 16px;
+    font-family: Helvetica;
+    border-radius: 12px;
+    border: none;
+    padding: 16px 22px;
+  }
+
+  .login-form-password {
+    margin: 6px;
+    font-size: 16px;
+    font-family: Helvetica;
+    border-radius: 12px;
+    border: none;
+    padding: 16px 22px;
+  }
+
+  .login-form-button {
+    margin-top: 24px;
+    margin: 6px;
+    font-size: 24px;
+    padding: 10px 20px;
+    background-color: #bcec30;
+    border: none;
+    border-radius: 18px;
+    cursor: pointer;
+  }
+
+  .login-form-button:hover {
+    opacity: 0.9;
+  }
+
+  .login-register {
+    margin: 32px;
+    font-family: Helvetica;
+    color: #ffffff;
+    font-size: 24px;
+    white-space: pre-line;
+    display: flex;
+    justify-content: center;
+    border: none;
+    background-color: transparent;
+    cursor: pointer;
+    text-decoration: underline;
+  }
+  
