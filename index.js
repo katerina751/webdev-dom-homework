@@ -1,6 +1,6 @@
 import { addComment, deleteComment, getComments } from "./api.js";
 import { renderLoginComponent } from "./login-component.js";
-
+import { format } from "date-fns";
 
 
 let comments = [];
@@ -18,21 +18,17 @@ const fetchComments = () => {
   // fetch - запускает запрос в api
   return getComments({ token })
     .then((responseData) => {
-      const options = {
-        year: "2-digit",
-        month: "numeric",
-        day: "numeric",
-        timezone: "UTC",
-        hour: "numeric",
-        minute: "2-digit",
-      };
 
       const appComments = responseData.comments.map((comment) => {
+        const createDate = format(
+          new Date(comment.date),
+          "yyyy-MM-dd hh.mm.ss"
+        );
         return {
           name: comment.author.name
             .replaceAll("<", "&lt;")
             .replaceAll(">", "&gt;"),
-          date: new Date(comment.date).toLocaleString("ru-RU", options),
+          date: createDate,
           text: comment.text
             .replaceAll("<", "&lt;")
             .replaceAll(">", "&gt;"),
